@@ -126,6 +126,72 @@ public class DatabaseHelper {
 	    return null; // If no user exists or an error occurs
 	}
 	
+	//Delete a user from database
+	public void deleteUser(String userName) {
+		String query = "DELETE FROM cse360users WHERE userName = ?";
+		
+		try(PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, userName);
+			pstmt.executeUpdate();
+				
+	    	} catch (SQLException e) {
+	    		e.printStackTrace();
+	    }	
+	}
+	
+    //Generate a one time password code to reset
+	public String generatePasswordCode(String userName) {
+	    String code = UUID.randomUUID().toString().substring(0, 4);
+	    String query = "UPDATE cse360users SET password = ? WHERE userName = ?";
+
+	    try (
+	        PreparedStatement pstmt = connection.prepareStatement(query);
+	    ) {
+
+	        //Update cse360users table to new one time password
+	        pstmt.setString(1, code);
+	        pstmt.setString(2, userName);
+	        pstmt.executeUpdate();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return code;
+	}
+	
+	//Update user password for one time password
+	public void updateUserPassword(String password, String userName) {
+		String query = "UPDATE cse360users SET password = ? WHERE userName = ?";
+		
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)){
+	    	//Update cse360users table to user new password
+		    pstmt.setString(1, password);
+		    pstmt.setString(2, userName);
+		    pstmt.executeUpdate();
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+	}
+	
+	public String checkPassword(String userName) {
+		String query = "SELECT password FROM cse360users WHERE userName = ?";
+		String password = null;
+		
+	    try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+	        pstmt.setString(1, userName);
+	        try (ResultSet rs = pstmt.executeQuery()){
+	        	if (rs.next()) {
+	        		password = rs.getString("password");
+	        	}
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return password;
+	}
+	
 	// Generates a new invitation code and inserts it into the database.
 	public String generateInvitationCode() {
 	    String code = UUID.randomUUID().toString().substring(0, 4); // Generate a random 4-character code

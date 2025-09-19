@@ -37,6 +37,11 @@ public class UserLoginPage {
 
 
         Button loginButton = new Button("Login");
+        VBox layout = new VBox(10);
+        layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
+        layout.getChildren().addAll(userNameField, passwordField, loginButton, errorLabel);
+        
+        Scene loginScene = new Scene(layout, 800, 400);
         
         loginButton.setOnAction(a -> {
         	// Retrieve user inputs
@@ -44,6 +49,49 @@ public class UserLoginPage {
             String password = passwordField.getText();
             try {
             	User user=new User(userName, password, "");
+            	//Check if password is otp and valid
+        		String passwordValidCheck = databaseHelper.checkPassword(userName);
+            	//If otp is entered prompt for password change
+            	if (password.length() == 4 && passwordValidCheck.equals(password)) {
+            		VBox otpLayout = new VBox();
+            		Button otpChangePass = new Button("Change Password");
+            		otpLayout.setStyle("-fx-padding: 20; -fx-alignment: center;");
+            	    Scene otpChangeScene = new Scene(otpLayout, 800, 400);
+            	    Label passwordLabel = new Label("Enter a new password");
+                    TextField userNameFieldPassword = new TextField();
+                    userNameFieldPassword.setPromptText("Enter new password");
+                    userNameFieldPassword.setMaxWidth(250);
+                    
+                    //Add functionality for otp password change
+                    otpChangePass.setOnAction(e -> {
+                    	String newPassword = userNameFieldPassword.getText();
+                    	String errPasswordMessage = PasswordEvaluator.evaluatePassword(newPassword);
+                    	if (errPasswordMessage != "") {
+                    		Alert alert = new Alert(Alert.AlertType.ERROR);
+                    		alert.setTitle("Invalid Password");
+                    		alert.setContentText(errPasswordMessage);
+                    		alert.showAndWait();
+                    		return;
+                    	}
+                    	DatabaseHelper databaseHelper = new DatabaseHelper();
+                    	try {
+                    		databaseHelper.connectToDatabase();
+                    		databaseHelper.updateUserPassword(newPassword, userName);
+                    		Alert successAlert = new Alert(Alert.AlertType.ERROR);
+                    		successAlert.setTitle("Password Changed");
+                    		successAlert.setContentText("You have successfully changed your password, please log back in.");
+                    		successAlert.showAndWait();
+                    		primaryStage.setScene(loginScene);
+                    	} catch(SQLException ex){
+                    		ex.printStackTrace();
+                    	}
+                    });
+                    
+                    otpLayout.getChildren().addAll(passwordLabel, userNameFieldPassword, otpChangePass);
+                    primaryStage.setScene(otpChangeScene);
+                    return;
+            	}
+            	
             	WelcomeLoginPage welcomeLoginPage = new WelcomeLoginPage(databaseHelper);
             	
             	// Retrieve the user's role from the database using userName
@@ -70,11 +118,7 @@ public class UserLoginPage {
             } 
         });
 
-        VBox layout = new VBox(10);
-        layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
-        layout.getChildren().addAll(userNameField, passwordField, loginButton, errorLabel);
-
-        primaryStage.setScene(new Scene(layout, 800, 400));
+        primaryStage.setScene(loginScene);
         primaryStage.setTitle("User Login");
         primaryStage.show();
     }
