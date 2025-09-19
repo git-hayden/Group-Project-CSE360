@@ -5,7 +5,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
-
+import java.util.ArrayList;
+import java.util.List;
 import application.User;
 
 
@@ -124,6 +125,22 @@ public class DatabaseHelper {
 	        e.printStackTrace();
 	    }
 	    return null; // If no user exists or an error occurs
+	}
+
+	//retrieve all users from db
+	public List<User> getAllUsers() throws SQLException {
+		java.util.List<User> users = new ArrayList<>();
+		String query = "SELECT * FROM cse360users";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			ResultSet rs = pstmt.executeQuery();
+		while (rs.next()) {
+			String userName = rs.getString("userName");
+			String role = rs.getString("role");
+			User user = new User(userName, null, role);
+			users.add(user);
+		}
+		return users;
+	}
 	}
 	
 	// Generates a new invitation code and inserts it into the database.
