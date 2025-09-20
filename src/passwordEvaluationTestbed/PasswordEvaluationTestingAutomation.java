@@ -85,7 +85,6 @@ public class PasswordEvaluationTestingAutomation {
         performTestCase(1,  "Mustafa9!",        true);
         performTestCase(2,  "LeoRocks9$",       true);
         performTestCase(6,  "Leo1225m",         true);
-
         // negative (should fail)
         performTestCase(3,  "A",                false);
         performTestCase(4,  "",                 false);
