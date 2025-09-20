@@ -200,4 +200,14 @@ public class DatabaseHelper {
 		} 
 	}
 
+	//delete user from db
+	public boolean deleteUser(String userName) throws SQLException {
+		String query = "DELETE FROM cse360users WHERE userName = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+			pstmt.setString(1, userName);
+			int rowsDeleted = pstmt.executeUpdate();
+			return rowsDeleted > 0;
+		}
+	}
+	
 }
