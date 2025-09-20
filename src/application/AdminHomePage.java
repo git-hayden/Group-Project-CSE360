@@ -1,6 +1,7 @@
 package application;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 import databasePart1.DatabaseHelper;
 import javafx.scene.Scene;
@@ -59,9 +60,17 @@ public class AdminHomePage {
         	}
         	DatabaseHelper databaseHelper = new DatabaseHelper();
         	try {
-        		databaseHelper.connectToDatabase();
-        		databaseHelper.deleteUser(userName);
-        		primaryStage.setScene(adminScene);
+        		Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        		confirmAlert.setTitle("Confirm Delete");
+        		confirmAlert.setHeaderText("Are you sure you want to delete?");
+        		confirmAlert.setContentText("Are you sure you want to delete " + userName);
+        		Optional<ButtonType> confirmation = confirmAlert.showAndWait();
+        		
+        		if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+        			databaseHelper.connectToDatabase();
+        			databaseHelper.deleteUser(userName);
+        			primaryStage.setScene(adminScene);
+        		}
         	} catch(SQLException ex){
         		ex.printStackTrace();
         	}
