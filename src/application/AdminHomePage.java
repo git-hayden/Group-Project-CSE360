@@ -52,11 +52,13 @@ public class AdminHomePage {
         Button deleteUser = new Button("Delete User");
         deleteUser.setOnAction(e -> {
         	String userName = userNameField.getText();
+        	
         	if (userName == "") {
         		Alert alert = new Alert(Alert.AlertType.ERROR);
         		alert.setTitle("Invalid User");
         		alert.setContentText("Error Invalid Username");
         		alert.showAndWait();
+        		return;
         	}
         	DatabaseHelper databaseHelper = new DatabaseHelper();
         	try {
@@ -68,6 +70,14 @@ public class AdminHomePage {
         		
         		if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
         			databaseHelper.connectToDatabase();
+        			//Admin check
+        			if (databaseHelper.getUserRole(userName).equals("admin")) {
+                		Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                		errorAlert.setTitle("Invalid User");
+                		errorAlert.setContentText("Error cannot delete admin");
+                		errorAlert.showAndWait();
+                		return;
+        			}
         			databaseHelper.deleteUser(userName);
         			primaryStage.setScene(adminScene);
         		}
