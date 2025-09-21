@@ -15,6 +15,7 @@ import java.util.Optional;
 import javafx.scene.control.TextInputDialog;
 
 
+
 /**
  * AdminPage class represents the user interface for the admin user.
  * This page displays a simple welcome message for the admin.
@@ -25,6 +26,23 @@ public class AdminHomePage {
      * Displays the admin page in the provided primary stage.
      * @param primaryStage The primary stage where the scene will be displayed.
      */
+	//fields
+	private DatabaseHelper databaseHelper;
+	private User currentUser;
+
+	// Accept dependencies
+	 public AdminHomePage(DatabaseHelper databaseHelper, User user) {
+		this.databaseHelper = databaseHelper;
+		this.currentUser = user;
+	}
+
+	//existing no args constructor to ensure compatibility.
+	public AdminHomePage() {
+		this.databaseHelper = null;
+		this.currentUser = null;
+	}
+
+	
     public void show(Stage primaryStage) {
     	VBox layout = new VBox(10);
     	layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
@@ -32,6 +50,16 @@ public class AdminHomePage {
 	    // label to display the welcome message for the admin
 	    Label adminLabel = new Label("Hello, Admin!");
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+		//create a return button
+		Button returnButton = new Button("Back.");
+		returnButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
+		returnButton.setOnAction(e -> returnToWelcomePage(primaryStage));
+
+		//only return if dependencies are present
+		if(databaseHelper != null && currentUser != null) {
+			layout.getChildren().add(returnButton);
+		}
 
 		//create table
 		TableView<User> userTable = createUserTable();
@@ -96,7 +124,7 @@ public class AdminHomePage {
 					deleteButton.setStyle("-fx-background-color: #cccccc; -fx-text-fill: #666666;");
 					deleteButton.setTooltip(new Tooltip("Admin users cannot be removed."));
 				} else {
-					//If user is not admin, show delete button
+					//If user is not admin show delete button
 					deleteButton.setText("Delete");
 					deleteButton.setDisable(false);
 					deleteButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
@@ -139,7 +167,7 @@ public class AdminHomePage {
 			databaseHelper.closeConnection();
 		}
 	}
-	//Handle user deletion, prevent admin from being deleted and ask for confirmation
+	//Handle user deletion prevent admin from being deleted and ask for confirmation
 	private void deleteUser(User user, TableView<User> table) {
 		if("admin".equalsIgnoreCase(user.getRole())) {
 			Alert adminProtectionAlert = new Alert(Alert.AlertType.WARNING); //admin protection and alert
@@ -209,6 +237,21 @@ public class AdminHomePage {
 			dbErrorAlert.showAndWait();
 		} finally {
 			databaseHelper.closeConnection();
+		}
+	}
+	//method to return to welcome page
+	private void returnToWelcomePage(Stage primaryStage) {
+		if(databaseHelper != null && currentUser != null) {
+			WelcomeLoginPage welcomePage = new WelcomeLoginPage(databaseHelper);
+			welcomePage.show(primaryStage, currentUser);
+		}else{
+			//Show error and navigate to login.
+			Alert alert = new Alert(Alert.AlertType.WARNING);
+			alert.setTitle("Navigation error");
+			alert.setHeaderText("Cannot return to welcome page");
+			alert.setContentText("Please login again.");
+			alert.showAndWait();
+			new SetupLoginSelectionPage(new DatabaseHelper()).show(primaryStage);
 		}
 	}
 }

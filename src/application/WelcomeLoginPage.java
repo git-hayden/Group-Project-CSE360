@@ -33,7 +33,7 @@ public class WelcomeLoginPage {
 	    	System.out.println(role);
 	    	
 	    	if(role.equals("admin")) {
-	    		new AdminHomePage().show(primaryStage);
+	    		new AdminHomePage(databaseHelper, user).show(primaryStage);
 	    	}
 	    	else if(role.equals("user")) {
 	    		new UserHomePage().show(primaryStage);
