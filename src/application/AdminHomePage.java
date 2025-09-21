@@ -52,21 +52,21 @@ public class AdminHomePage {
 	    adminLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
 		//create a return button
-		Button returnButton = new Button("Back.");
+		Button returnButton = new Button("Back");
 		returnButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
 		returnButton.setOnAction(e -> returnToWelcomePage(primaryStage));
 
-		//only return if dependencies are present
-		if(databaseHelper != null && currentUser != null) {
-			layout.getChildren().add(returnButton);
-		}
 
 		//create table
 		TableView<User> userTable = createUserTable();
 
 		//add users to table
 		loadUsers(userTable);
-		layout.getChildren().addAll(adminLabel, userTable);
+
+		//only return if dependencies are present
+		if(databaseHelper != null && currentUser != null) {
+			layout.getChildren().addAll(adminLabel, userTable,returnButton);
+		}else {layout.getChildren().addAll(adminLabel, userTable);}
 		primaryStage.setScene(new Scene(layout, 800, 400)); //increase height for table
 
 	    Scene adminScene = new Scene(layout, 800, 400);
