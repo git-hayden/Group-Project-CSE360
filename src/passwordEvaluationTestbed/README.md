@@ -5,10 +5,10 @@ As a user, I can log out when I’m finished or when I want to switch roles.
 ## What’s here
 - `src/app/auth/AuthSession.java` – tiny session manager (`login`, `logout`, `getRole`).
 - `src/passwordEvaluationTestbed/PasswordEvaluationTestingAutomation.java` – console menu:
-  1) Run password tests  
-  2) Logout (optionally login again)  
-  3) Exit  
-  4) Change role (ADMIN / USER / GUEST)
+  1. Run password tests  
+  2. Logout (optionally login again)  
+  3. Exit  
+  4. Change role (ADMIN / USER / GUEST)
 
 ## How to run (Eclipse)
 1. Open the project **Group-Project-CSE360**.
