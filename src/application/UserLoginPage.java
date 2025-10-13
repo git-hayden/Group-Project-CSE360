@@ -52,7 +52,26 @@ public class UserLoginPage {
             	if(role!=null) {
             		user.setRole(role);
             		if(databaseHelper.login(user)) {
-            			welcomeLoginPage.show(primaryStage,user);
+            			// SINGLE ROLE BYPASS FEATURE - Implemented by John M
+            			// User Story: "If user has one role skip no role select immediate login"
+            			// 
+            			// Instead of showing WelcomeLoginPage (which requires extra "Continue" click),
+            			// we directly route users to their appropriate home page based on their role.
+            			// This improves user experience by eliminating unnecessary intermediate steps.
+            			
+            			if(role.equals("admin")) {
+            				// Admin users bypass welcome page and go directly to AdminHomePage
+            				new AdminHomePage().show(primaryStage);
+            			}
+            			else if(role.equals("user")) {
+            				// Regular users bypass welcome page and go directly to UserHomePage
+            				new UserHomePage().show(primaryStage);
+            			}
+            			else {
+            				// Fallback for unknown roles or future multi-role support 
+            				// If user has multiple roles or unrecognized role, use original welcome page flow
+            				welcomeLoginPage.show(primaryStage,user);
+            			}
             		}
             		else {
             			// Display an error if the login fails
