@@ -37,7 +37,7 @@ public class UserNameRecognizer {
 	private static int currentCharNdx;					// The index of the current character
 	private static boolean running;						// The flag that specifies if the FSM is 
 														// running
-	private static int userNameSize = 0;			// A numeric value may not exceed 16 characters
+	private static int userNameSize = 0;			// A numeric value may not exceed 20 characters
 
 	// Private method to display debugging data
 	private static void displayDebuggingInfo() {
@@ -107,12 +107,13 @@ public class UserNameRecognizer {
 			case 0: 
 				// State 0 has 1 valid transition that is addressed by an if statement.
 				
-				// The current character is checked against A-Z, a-z. If any are matched
+				// The current character is checked against A-Z, a-z, 0-9. If any are matched
 				// the FSM goes to state 1
 				
-				// A-Z, a-z -> State 1
+				// A-Z, a-z, 0-9 -> State 1
 				if ((currentChar >= 'A' && currentChar <= 'Z' ) ||		// Check for A-Z
-						(currentChar >= 'a' && currentChar <= 'z' )) {	// Check for a-z
+						(currentChar >= 'a' && currentChar <= 'z' )	||  // Check for a-z
+				   		(currentChar >= '0' && currentChar <= '9' )) {	// Check for 0-9
 					nextState = 1;
 					
 					// Count the character 
@@ -155,8 +156,8 @@ public class UserNameRecognizer {
 					running = false;
 				
 				// The execution of this state is finished
-				// If the size is larger than 16, the loop must stop
-				if (userNameSize > 16)
+				// If the size is larger than 20, the loop must stop
+				if (userNameSize > 20)
 					running = false;
 				break;			
 				
@@ -178,8 +179,8 @@ public class UserNameRecognizer {
 					running = false;
 
 				// The execution of this state is finished
-				// If the size is larger than 16, the loop must stop
-				if (userNameSize > 16)
+				// If the size is larger than 20, the loop must stop
+				if (userNameSize > 20)
 					running = false;
 				break;			
 			}
@@ -220,22 +221,22 @@ public class UserNameRecognizer {
 		switch (state) {
 		case 0:
 			// State 0 is not a final state, so we can return a very specific error message
-			userNameRecognizerErrorMessage += "A UserName must start with A-Z or a-z.\n";
+			userNameRecognizerErrorMessage += "A UserName must start with A-Z, a-z, or 0-9.\n";
 			return userNameRecognizerErrorMessage;
 
 		case 1:
 			// State 1 is a final state.  Check to see if the UserName length is valid.  If so we
 			// we must ensure the whole string has been consumed.
 
-			if (userNameSize < 4) {
+			if (userNameSize < 3) {
 				// UserName is too small
-				userNameRecognizerErrorMessage += "A UserName must have at least 4 characters.\n";
+				userNameRecognizerErrorMessage += "A UserName must have at least 3 characters.\n";
 				return userNameRecognizerErrorMessage;
 			}
-			else if (userNameSize > 16) {
+			else if (userNameSize > 20) {
 				// UserName is too long
 				userNameRecognizerErrorMessage += 
-					"A UserName must have no more than 16 character.\n";
+					"A UserName must have no more than 20 characters.\n";
 				return userNameRecognizerErrorMessage;
 			}
 			else if (currentCharNdx < input.length()) {
